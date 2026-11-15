@@ -119,37 +119,40 @@ export class SupabaseServiceRepository implements IServiceRepository {
   }
 
   async deleteService(id: string): Promise<void> {
-    const client = this.getClient()
     try {
-      const { data: linkedRequests } = await client
-        .from('service_requests')
-        .select('id')
-        .eq('service_id', id)
-
-      if (linkedRequests && linkedRequests.length > 0) {
-        const reqIds = linkedRequests.map((r: { id: string }) => r.id)
-        await client.from('request_attachments').delete().in('request_id', reqIds)
-        await client.from('conversations').delete().in('request_id', reqIds)
-        await client.from('verified_deliveries').delete().in('request_id', reqIds)
-        await client.from('sla_tracking').delete().in('request_id', reqIds)
-        await client.from('intake_responses').delete().in('request_id', reqIds)
-        await client.from('service_requests').delete().eq('service_id', id)
+      const res = await fetch('/api/admin/services/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      })
+      if (res.ok) {
+        return
       }
-
-      await client.from('intake_requirements').delete().eq('service_id', id)
-      await client.from('service_analytics').delete().eq('service_id', id)
-      await client.from('security_incidents').update({ service_id: null }).eq('service_id', id)
-
-      const { error } = await client.from('services').delete().eq('id', id)
-      if (error) {
-        const fallback = await client.from('services').update({ is_active: false }).eq('id', id)
-        if (fallback.error) throw new Error(error.message)
+      const errData = await res.json().catch(() => null)
+      if (errData?.error) {
+        throw new Error(errData.error)
       }
-    } catch (err: unknown) {
-      const fallback = await client.from('services').update({ is_active: false }).eq('id', id)
-      if (fallback.error) {
-        throw new Error(err instanceof Error ? err.message : 'Error al eliminar el servicio')
+    } catch (e: unknown) {
+      if (e instanceof Error && !e.message.includes('fetch')) {
+        throw e
       }
     }
+
+    const client = this.getClient()
+    const { data: linkedRequests } = await client
+      .from('service_requests')
+      .select('id')
+      .eq('service_id', id)
+
+    if (linkedRequests && linkedRequests.length > 0) {
+      const reqIds = linkedRequests.map((r: { id: string }) => r.id)
+      await client.from('request_attachments').delete().in('request_id', reqIds)
+      await client.from('conversations').delete().in('request_id', reqIds)
+      const delReq = await client.from('service_requests').delete().eq('service_id', id)
+      if (delReq.error) throw new Error(delReq.error.message)
+    }
+
+    const { error } = await client.from('services').delete().eq('id', id)
+    if (error) throw new Error(error.message)
   }
 }

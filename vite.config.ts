@@ -333,6 +333,39 @@ function apiDevMiddleware(): Plugin {
                   credential: returnedCredential
                 }))
               }
+
+              if (req.url === '/api/admin/services/delete') {
+                const { id } = data
+                if (!id) {
+                  res.statusCode = 400
+                  return res.end(JSON.stringify({ error: 'ID de servicio requerido' }))
+                }
+
+                const { data: linkedRequests } = await adminClient
+                  .from('service_requests')
+                  .select('id')
+                  .eq('service_id', id)
+
+                if (linkedRequests && linkedRequests.length > 0) {
+                  const reqIds = linkedRequests.map((r: { id: string }) => r.id)
+                  await adminClient.from('request_attachments').delete().in('request_id', reqIds)
+                  await adminClient.from('conversations').delete().in('request_id', reqIds)
+                  const { error: delReqErr } = await adminClient.from('service_requests').delete().eq('service_id', id)
+                  if (delReqErr) {
+                    res.statusCode = 400
+                    return res.end(JSON.stringify({ error: delReqErr.message }))
+                  }
+                }
+
+                const { error: delServiceErr } = await adminClient.from('services').delete().eq('id', id)
+                if (delServiceErr) {
+                  res.statusCode = 400
+                  return res.end(JSON.stringify({ error: delServiceErr.message }))
+                }
+
+                res.statusCode = 200
+                return res.end(JSON.stringify({ success: true }))
+              }
               res.statusCode = 404
               res.end(JSON.stringify({ error: 'Endpoint no encontrado' }))
             } catch (err: unknown) {
