@@ -58,9 +58,3 @@ La pantalla de inicio de sesión incluye botones de acceso rápido para evaluar 
 
 ---
 
-## 5. Base de Datos PostgreSQL
-
-El archivo de esquema listo para ser pegado en el Editor SQL de Supabase se encuentra en:
-`database/supabase_schema.sql`
-
-*Nota de seguridad:* El script SQL contiene tipos ENUM, tablas normalizadas, índices optimizados, triggers `updated_at`, secuencia de folios `#001`, función transaccional `update_request_status_atomic`, políticas RLS por rol y configuración de bucket privado para adjuntos.
