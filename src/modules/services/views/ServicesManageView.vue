@@ -34,6 +34,7 @@ const itemsPerPage = 6
 
 const isModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
+const isDeleting = ref(false)
 const serviceToDelete = ref<Service | null>(null)
 const editingServiceId = ref<string | null>(null)
 
@@ -165,16 +166,35 @@ function confirmDelete(service: Service) {
   isDeleteModalOpen.value = true
 }
 
+async function handleDeactivate() {
+  if (!serviceToDelete.value) return
+  isDeleting.value = true
+  try {
+    await repositories.services.updateService({ id: serviceToDelete.value.id, is_active: false })
+    isDeleteModalOpen.value = false
+    serviceToDelete.value = null
+    uiStore.showToast('success', 'Servicio desactivado', 'El servicio fue desactivado y retirado del catálogo público.')
+    await loadData()
+  } catch (err: unknown) {
+    uiStore.showToast('error', 'Error al desactivar', err instanceof Error ? err.message : 'No se pudo desactivar el servicio')
+  } finally {
+    isDeleting.value = false
+  }
+}
+
 async function handleDelete() {
   if (!serviceToDelete.value) return
+  isDeleting.value = true
   try {
     await repositories.services.deleteService(serviceToDelete.value.id)
     isDeleteModalOpen.value = false
     serviceToDelete.value = null
-    uiStore.showToast('success', 'Servicio eliminado', 'El servicio fue eliminado del catálogo correctamente.')
+    uiStore.showToast('success', 'Servicio eliminado', 'El servicio fue eliminado correctamente del sistema.')
     await loadData()
   } catch (err: unknown) {
     uiStore.showToast('error', 'Error al eliminar', err instanceof Error ? err.message : 'No se pudo eliminar el servicio')
+  } finally {
+    isDeleting.value = false
   }
 }
 
@@ -452,22 +472,29 @@ const totalPages = () => Math.ceil(totalServices.value / itemsPerPage) || 1
       </template>
     </BaseModal>
 
-    <BaseModal v-model="isDeleteModalOpen" title="Confirmar eliminación">
+    <BaseModal v-model="isDeleteModalOpen" title="Gestión de eliminación de servicio">
       <div class="delete-confirm-box">
         <div class="warn-icon-wrap">
           <AlertTriangle :size="36" class="warn-icon" />
         </div>
         <p class="delete-msg">
-          ¿Estás seguro de que deseas eliminar el servicio <strong>{{ serviceToDelete?.name }}</strong>?
+          ¿Deseas eliminar o desactivar el servicio <strong>{{ serviceToDelete?.name }}</strong>?
         </p>
         <p class="delete-subtext">
-          Esta acción no se puede deshacer. Si el servicio cuenta con solicitudes históricas asociadas, te recomendamos desactivarlo en lugar de eliminarlo.
+          Puedes desactivar el servicio para retirarlo del catálogo público conservando el historial, o eliminarlo definitivamente junto con sus registros vinculados.
         </p>
       </div>
 
       <template #footer>
-        <button class="btn btn-secondary" @click="isDeleteModalOpen = false">Cancelar</button>
-        <button class="btn btn-danger" @click="handleDelete">Eliminar definitivamente</button>
+        <div class="modal-delete-actions">
+          <button class="btn btn-secondary" :disabled="isDeleting" @click="isDeleteModalOpen = false">Cancelar</button>
+          <button class="btn btn-warning" :disabled="isDeleting" @click="handleDeactivate">
+            {{ isDeleting ? 'Procesando...' : 'Desactivar servicio' }}
+          </button>
+          <button class="btn btn-danger" :disabled="isDeleting" @click="handleDelete">
+            {{ isDeleting ? 'Eliminando...' : 'Eliminar definitivamente' }}
+          </button>
+        </div>
       </template>
     </BaseModal>
   </div>
@@ -937,6 +964,36 @@ const totalPages = () => Math.ceil(totalServices.value / itemsPerPage) || 1
   font-size: 13px;
   color: var(--color-text-secondary);
   line-height: 1.4;
+}
+
+.modal-delete-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.btn-warning:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1024px) {
