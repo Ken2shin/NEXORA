@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 72" fill="none">
+  <defs>
+    <linearGradient id="logoRibbonWhite" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#E0F2FE" />
+      <stop offset="100%" stop-color="#BAE6FD" />
+    </linearGradient>
+    <linearGradient id="logoStarWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD659" />
+      <stop offset="100%" stop-color="#FFC83D" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(6, 4) scale(0.95)">
+    <path d="M12 48V20C12 16.6863 14.6863 14 18 14C21.3137 14 24 16.6863 24 20V42L40 18C41.8 15.3 45.2 14 48.5 15.2C51.8 16.5 54 19.6 54 23V46C54 49.3137 51.3137 52 48 52C44.6863 52 42 49.3137 42 46V24L26 48C24.2 50.7 20.8 52 17.5 50.8C14.2 49.5 12 46.4 12 43Z" fill="url(#logoRibbonWhite)" />
+    <path d="M50 10L52 15L57 17L52 19L50 24L48 19L43 17L48 15L50 10Z" fill="url(#logoStarWhite)" />
+  </g>
+  <text x="76" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="30" fill="#FFFFFF" letter-spacing="1">NEXORA</text>
+  <text x="77" y="58" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="10.5" fill="#E0F2FE" letter-spacing="1.2">Gestiona · Solicita · Avanza</text>
+</svg>

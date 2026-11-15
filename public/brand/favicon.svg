@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="favRibbonGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8252E8" />
+      <stop offset="60%" stop-color="#087BFA" />
+      <stop offset="100%" stop-color="#28B8FF" />
+    </linearGradient>
+    <linearGradient id="favGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD659" />
+      <stop offset="100%" stop-color="#FF9E00" />
+    </linearGradient>
+  </defs>
+  <path d="M12 48V20C12 16.6863 14.6863 14 18 14C21.3137 14 24 16.6863 24 20V42L40 18C41.8 15.3 45.2 14 48.5 15.2C51.8 16.5 54 19.6 54 23V46C54 49.3137 51.3137 52 48 52C44.6863 52 42 49.3137 42 46V24L26 48C24.2 50.7 20.8 52 17.5 50.8C14.2 49.5 12 46.4 12 43Z" fill="url(#favRibbonGrad)" />
+  <path d="M48 10L50 15L55 17L50 19L48 24L46 19L41 17L46 15L48 10Z" fill="url(#favGoldGrad)" />
+</svg>
