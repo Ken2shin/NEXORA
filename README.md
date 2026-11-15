@@ -52,13 +52,9 @@ pnpm run build
 
 ## 4. Cuentas de Demostración Integradas
 
-La pantalla de inicio de sesión incluye botones de acceso rápido para evaluar los 3 roles técnicos de forma inmediata:
+La pantalla de inicio de sesión incluye botones de acceso rápido para evaluar los 3 roles técnicos de forma inmediata
 
-| Rol | Correo de Acceso | Contraseña |
-|---|---|---|
-| Administrador | `admin@nexora.com` | `admin123` |
-| Empleado | `empleado@nexora.com` | `empleado123` |
-| Cliente | `carlos@gmail.com` | `cliente123` |
+
 
 ---
 
